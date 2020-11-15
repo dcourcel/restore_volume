@@ -19,7 +19,7 @@ function do_restoration {
     fi &&
     cd "$DESTINATION" &&
 
-    tar -x -f "$ARCHIVE_NAME" -j &&
+    tar -x -f "$ARCHIVE_NAME" &&
 
     if [ -n "$DELETE_ARCHIVE" ]; then
         echo "Delete archive $ARCHIVE_NAME"
