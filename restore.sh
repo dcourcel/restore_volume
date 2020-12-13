@@ -11,6 +11,7 @@ function cleanup()
 trap 'cleanup' SIGINT
 trap 'cleanup' SIGTERM
 
+
 function do_restoration {
     mkdir -p "$DESTINATION" &&
     if [ -n "$DELETE_DESTINATION" ]; then
@@ -19,26 +20,49 @@ function do_restoration {
     fi &&
     cd "$DESTINATION" &&
 
-    tar -x -f "$ARCHIVE_NAME" &&
+    tar -x -f "$BACKUP_FILE" &&
 
     if [ -n "$DELETE_ARCHIVE" ]; then
-        echo "Delete archive $ARCHIVE_NAME"
-        rm -f "$ARCHIVE_NAME"
+        echo "Delete archive $BACKUP_FILE"
+        rm -f "$BACKUP_FILE"
     fi
 }
 
-if [ ! -e "$ARCHIVE_NAME" ]; then
-    echo '$ARCHIVE_NAME is not defined or is not a file.'
-    exit 1
-fi;
 if [ -z "$DESTINATION" ]; then
     echo '$DESTINATION is not defined.'
     exit 1
 fi;
+if [ -z "$BACKUP_FOLDER" ]; then
+    echo '$BACKUP_FOLDER' is not defined
+    exit 1
+fi;
+if [ -n "$DATE_DIR_FILE" ]; then
+    if [ ! -f "$DATE_DIR_FILE" ]; then
+        echo "\$DATE_DIR_FILE ($DATE_DIR_FILE) is not a file."
+        exit 1
+    fi
+    date_dir=$(head -n 1 $DATE_DIR_FILE)
+    if [ -z "$date_dir" ]; then
+        echo "The file $DATE_DIR_FILE is empty."
+        exit 1
+    fi
+else
+    echo "\$DATE_DIR_FILE is not defined."
+    exit 1
+fi;
+
+BACKUP_FILE=/media/backup/$BACKUP_FOLDER/$date_dir/$ARCHIVE_NAME
+if [ -z "$ARCHIVE_NAME" ]; then
+    echo "\$ARCHIVE_NAME is empty."
+    exit 1
+elif [ ! -f "$BACKUP_FILE" ]; then
+    echo "The file $BACKUP_FILE doesn't exist."
+    exit 1
+fi
 
 
 echo "----------------------------------------"
-echo "Begin restoration of $ARCHIVE_NAME in $DESTINATION"
+echo "Begin restoration of $BACKUP_FILE in $DESTINATION"
 
 do_restoration &
 wait $!
