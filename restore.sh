@@ -36,28 +36,19 @@ if [ -z "$BACKUP_FOLDER" ]; then
     echo '$BACKUP_FOLDER' is not defined
     exit 1
 fi;
-if [ -n "$DATE_DIR_FILE" ]; then
-    if [ ! -f "$DATE_DIR_FILE" ]; then
-        echo "\$DATE_DIR_FILE ($DATE_DIR_FILE) is not a file."
-        exit 1
-    fi
-    date_dir=$(head -n 1 $DATE_DIR_FILE)
-    if [ -z "$date_dir" ]; then
-        echo "The file $DATE_DIR_FILE is empty."
-        exit 1
-    fi
-else
-    echo "\$DATE_DIR_FILE is not defined."
-    exit 1
-fi;
 
-BACKUP_FILE=/media/backup/$BACKUP_FOLDER/$date_dir/$ARCHIVE_NAME
+BACKUP_FILE="/media/backup/$BACKUP_FOLDER/$ARCHIVE_NAME"
 if [ -z "$ARCHIVE_NAME" ]; then
     echo "\$ARCHIVE_NAME is empty."
     exit 1
 elif [ ! -f "$BACKUP_FILE" ]; then
-    echo "The file $BACKUP_FILE doesn't exist."
-    exit 1
+    if [ -n "$NO_BACKUP" ]; then
+        echo "The file $BACKUP_FILE doesn't exist."
+        exit 1
+    else
+        echo "No need to restore since there is no archive at $BACKUP_FILE."
+        exit 0
+    fi
 fi
 
 

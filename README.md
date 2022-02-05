@@ -1,5 +1,5 @@
 # Docker image to restore a Docker volume
-This image writes the content of a .tar.bz2 archive to the destination specified (normally a Docker volume).
+This image writes the content of a .tar.bz2 archive to the destination specified (normally a Docker volume). This image is intended to run as a Docker job. If there is no backup file located at /media/backup/$BACKUP\_FOLDER/$ARCHIVE\_NAME, the process exit normally if the variable $NO\_BACKUP is not defined or with an error if the variable is defined. If the file exists, the process proceeds with the restoration.
 
 The following table describe the environment variables to specify. The variables without a default value must be specified.
 | Variable            | Description                                                                                          | Default       |
@@ -9,7 +9,6 @@ The following table describe the environment variables to specify. The variables
 | $DESTINATION        | The destination folder where to extract the archive file. The folder is created if it doesn't exist. | /media/volume |
 | $DELETE_DESTINATION | If the variable is not empty, delete the content of $DESTINATION before extracting the archive.      |               |
 | $DELETE_ARCHIVE     | If the variable is not empty, delete the archive file after extracting it.                           |               |
-| $DATE_DIR_FILE      | The name of the file containing the folder name with ARCHIVE_NAME inside.                            |               |
 
 # Example of execution
 > docker run --mount type=volume,src=_my_volume_,dst=/media/volume --mount type=volume,src=_backup_,dst=/media/backup --env BACKUP\_FOLDER=_my\_service_ --env ARCHIVE_NAME=_my\_backup.tar.bz2_
